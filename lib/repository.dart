@@ -14,15 +14,30 @@ class Repository {
       return;
     }
 
-    Directory(objectsDir).createSync(recursive: true);
-    Directory("$refsDir/heads").createSync(recursive: true);
+    try {
+      // Ensure base directory exists
+      Directory(repoDir).createSync(recursive: true);
 
-    File(headFile).writeAsStringSync('refs/heads/main');
-    File('$refsDir/heads/main').writeAsStringSync(''); // Initialize main branch
-    File(indexFile).writeAsStringSync('');
-    File(ignoreFile).writeAsStringSync('# Add patterns to ignore files and directories\n');
+      // Create objects and refs/heads directories
+      Directory(objectsDir).createSync(recursive: true);
+      Directory("$refsDir/heads").createSync(recursive: true);
 
-    print('Initialized empty repository in $repoDir');
+      // Create HEAD file pointing to main branch
+      File(headFile).writeAsStringSync('refs/heads/main');
+
+      // Initialize main branch with no commits
+      File('$refsDir/heads/main').writeAsStringSync('');
+
+      // Create an empty index file
+      File(indexFile).writeAsStringSync('');
+
+      // Create a default .ditignore file
+      File(ignoreFile).writeAsStringSync('# Add patterns to ignore files and directories\n');
+
+      print('Initialized empty repository in $repoDir');
+    } catch (e) {
+      print('Error during repository initialization: $e');
+    }
   }
 
   void clone(String targetDir) {
