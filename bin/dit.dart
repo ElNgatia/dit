@@ -1,9 +1,11 @@
+import 'package:dit/commit.dart';
 import 'package:dit/index.dart';
 import 'package:dit/repository.dart';
 
 void main(List<String> args) {
   final repo = Repository();
   final index = Index([]);
+  final commit = Commit();
 
   if (args.isEmpty) {
     print('Usage: dit <command> [<args>]');
@@ -30,6 +32,14 @@ void main(List<String> args) {
       }
       index.add(args[1]);
       break;
+    case 'commit':
+      if (args.length < 2) {
+        print('Usage: dit commit <message>');
+        return;
+      }
+      commit.create(args[1]);
+      break;
+
     default:
       print('Unknown command: $command');
   }
