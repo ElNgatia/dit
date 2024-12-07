@@ -15,9 +15,10 @@ class Repository {
     }
 
     Directory(objectsDir).createSync(recursive: true);
-    Directory(refsDir).createSync(recursive: true);
+    Directory("$refsDir/heads").createSync(recursive: true);
 
     File(headFile).writeAsStringSync('refs/heads/main');
+    File('$refsDir/heads/main').writeAsStringSync(''); // Initialize main branch
     File(indexFile).writeAsStringSync('');
     File(ignoreFile).writeAsStringSync('# Add patterns to ignore files and directories\n');
 

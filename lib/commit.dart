@@ -5,18 +5,37 @@ import 'utils.dart';
 
 class Commit {
   void create(String message) {
-    final index = File('.dit/index');
-    final stagedFiles = index.readAsLinesSync();
+    // Ensure the HEAD file exists
+    final headFile = File('.dit/HEAD');
+    if (!headFile.existsSync()) {
+      print('Error: Repository not initialized. Run "init" first.');
+      return;
+    }
 
-    if (stagedFiles.isEmpty) {
+    // Read the current branch
+    final headBranch = headFile.readAsStringSync().trim();
+    final branchPath = headBranch.startsWith('refs/') ? headBranch.substring(5) : headBranch;
+
+    // Ensure the branch file exists
+    final branchFile = File('.dit/refs/$branchPath');
+    if (!branchFile.existsSync()) {
+      print('Error: Current branch $branchPath does not exist.');
+      return;
+    }
+
+    final parentCommit = branchFile.readAsStringSync().trim();
+
+    // Check if there are staged changes
+    final indexFile = File('.dit/index');
+    if (!indexFile.existsSync() || indexFile.readAsStringSync().trim().isEmpty) {
       print('No changes to commit.');
       return;
     }
 
+    // Create the commit
+    final stagedFiles = indexFile.readAsLinesSync();
     final commitId = generateCommitId();
     final commitFile = File('.dit/objects/$commitId');
-    final headBranch = File('.dit/HEAD').readAsStringSync().trim();
-    final parentCommit = File('.dit/refs/$headBranch').readAsStringSync().trim();
 
     final commitData = jsonEncode({
       'id': commitId,
@@ -27,9 +46,13 @@ class Commit {
     });
 
     commitFile.writeAsStringSync(commitData);
-    File('.dit/refs/$headBranch').writeAsStringSync(commitId);
 
-    index.writeAsStringSync('');
-    print('Committed changes as $commitId');
+    // Update the branch to point to the new commit
+    branchFile.writeAsStringSync(commitId);
+
+    // Clear the index
+    indexFile.writeAsStringSync('');
+
+    print('Committed changes as $commitId.');
   }
 }
