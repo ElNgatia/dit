@@ -1,7 +1,9 @@
+import 'package:dit/index.dart';
 import 'package:dit/repository.dart';
 
 void main(List<String> args) {
   final repo = Repository();
+  final index = Index([]);
 
   if (args.isEmpty) {
     print('Usage: dit <command> [<args>]');
@@ -20,6 +22,13 @@ void main(List<String> args) {
         return;
       }
       repo.clone(args[1]);
+      break;
+    case 'add':
+      if (args.length < 2) {
+        print('Usage: dit add <file>');
+        return;
+      }
+      index.add(args[1]);
       break;
     default:
       print('Unknown command: $command');
