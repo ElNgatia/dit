@@ -9,8 +9,8 @@ void main(List<String> args) {
   final commit = Commit();
   final branch = Branch();
 
-  if (args.isEmpty) {
-    print('Usage: dit <command> [<args>]');
+  if (args.isEmpty || args[0] == 'help') {
+    printHelp();
     return;
   }
 
@@ -65,4 +65,17 @@ void main(List<String> args) {
     default:
       print('Unknown command: $command');
   }
+}
+
+void printHelp() {
+  print('Usage: dit <command> [<args>]\n');
+  print('Commands:');
+  print('  init          Initialize a new repository');
+  print('  clone <target> Clone a repository');
+  print('  add <file>    Add a file to the index');
+  print('  commit <message> Commit changes with a message');
+  print('  branch <name> Create a new branch');
+  print('  checkout <branch> Checkout a branch');
+  print('  merge <branch> Merge a branch');
+  print('\nRun "dit <command> --help" for more information on a command.');
 }
